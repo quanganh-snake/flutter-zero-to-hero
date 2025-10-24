@@ -1,9 +1,12 @@
 import 'package:abv_basics/answer_button.dart';
 import 'package:abv_basics/data/questions.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class QuestionsScreen extends StatefulWidget {
-  const QuestionsScreen({super.key});
+  const QuestionsScreen({super.key, required this.onSelectAnswer});
+
+  final void Function(String answer) onSelectAnswer;
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
@@ -18,15 +21,19 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     super.initState();
   }
 
-  void answerQuestion() {
+  void answerQuestion(String selectedAnswer) {
+    // Biến "widget" trong StatefulWidget đại diện cho instance hiện tại của widget đó = QuestionsScreen.
+    // Nó cho phép bạn truy cập vào các thuộc tính và phương thức được định nghĩa trong lớp widget từ bên trong lớp State.
+    // Ở đây, chúng ta sử dụng "widget.onSelectAnswer" để gọi hàm "onSelectAnswer" được truyền từ bên ngoài vào widget QuestionsScreen.
+    // Điều này cho phép chúng ta truyền dữ liệu (câu trả lời đã chọn) từ lớp State trở lại lớp widget hoặc các thành phần bên ngoài khác.
+    widget.onSelectAnswer(selectedAnswer);
+
     setState(() {
-      if (questions.length - 1 > currentQuestionIndex) {
-        // There are more questions left
-        currentQuestionIndex++;
-      } else {
-        // No more questions left
-        currentQuestionIndex = 0;
-      }
+      currentQuestionIndex++;
+      // if (questions.length - 1 > currentQuestionIndex) {
+      // } else {
+      //   currentQuestionIndex = 0;
+      // }
     });
   }
 
@@ -45,7 +52,12 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           children: [
             Text(
               currentQuestion.text,
-              style: TextStyle(
+              // style: TextStyle(
+              //   color: Colors.white,
+              //   fontSize: 16,
+              //   fontWeight: FontWeight.bold,
+              // ),
+              style: GoogleFonts.lato(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -55,7 +67,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             ...currentQuestion.getShuffledAnswers().map((answer) {
               return AnswerButton(
                 answerText: answer,
-                onPressed: answerQuestion,
+                onPressed: () {
+                  answerQuestion(answer);
+                },
               );
             }),
           ],
