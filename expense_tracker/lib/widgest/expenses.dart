@@ -15,29 +15,76 @@ class _ExpensesState extends State<Expenses> {
   final List<Expense> _registerExpenses = [
     Expense(
       title: 'Flutter Course',
-      amount: 29.99,
+      amount: 19.99,
       date: DateTime.now(),
       category: Category.work,
     ),
     Expense(
-      title: 'React Native Course',
-      amount: 39.99,
+      title: 'Cinema',
+      amount: 15.69,
       date: DateTime.now(),
-      category: Category.work,
+      category: Category.leisure,
+    ),
+    Expense(
+      title: 'Groceries',
+      amount: 150.12,
+      date: DateTime.now(),
+      category: Category.food,
     ),
   ];
 
   void handleOpenModalAddExpense() {
     showModalBottomSheet(
       context: context,
-      builder: (buildContext) {
-        return CreateExpense();
-      },
+      isScrollControlled: true,
+      builder: (buildContext) => CreateExpense(onAddExpense: handleAddExpense),
+    );
+  }
+
+  void handleAddExpense(Expense expense) {
+    setState(() {
+      _registerExpenses.add(expense);
+    });
+  }
+
+  void handleDeleteExpense(Expense expense) {
+    final expenseIndex = _registerExpenses.indexOf(expense);
+
+    setState(() {
+      _registerExpenses.remove(expense);
+    });
+    ScaffoldMessenger.of(
+      context,
+    ).clearSnackBars(); // Xóa thông báo hiện tại nếu có --> Đẩy thông báo mới lên trên cùng
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: Text('Expense deleted: ${expense.title}'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _registerExpenses.insert(expenseIndex, expense);
+            });
+          },
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = const Center(
+      child: Text('No expenses found. Start adding some!'),
+    );
+
+    if (_registerExpenses.isNotEmpty) {
+      mainContent = ExpensesList(
+        expenses: _registerExpenses,
+        onDeleteExpense: handleDeleteExpense,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -54,12 +101,16 @@ class _ExpensesState extends State<Expenses> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.purple,
       ),
       body: Column(
         children: [
-          const Text('The list of expenses will go here.'),
-          Expanded(child: ExpensesList(expenses: _registerExpenses)),
+          Text(
+            'The chart.',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge!.copyWith(fontSize: 20, color: Colors.red),
+          ),
+          Expanded(child: mainContent),
         ],
       ),
     );
