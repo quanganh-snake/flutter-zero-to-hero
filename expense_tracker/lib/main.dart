@@ -67,7 +67,7 @@ void main() {
               ),
             ),
         debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.dark,
+        themeMode: ThemeMode.system,
       ),
     ),
   );

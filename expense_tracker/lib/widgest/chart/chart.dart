@@ -1,5 +1,7 @@
-import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/widgest/chart/chart_bar.dart';
 import 'package:flutter/material.dart';
+
+import 'package:expense_tracker/models/expense.dart';
 
 class Chart extends StatelessWidget {
   const Chart({super.key, required this.expenses});
@@ -23,6 +25,7 @@ class Chart extends StatelessWidget {
         maxTotalExpense = bucket.totalExpenses;
       }
     }
+
     return maxTotalExpense;
   }
 
@@ -35,7 +38,55 @@ class Chart extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       width: double.infinity,
       height: 180,
-      child: Text('Chart Placeholder'),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            Theme.of(context).colorScheme.primary.withOpacity(0.0),
+          ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ),
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (final bucket in buckets) // alternative to map()
+                  ChartBar(
+                    fill: bucket.totalExpenses == 0
+                        ? 0
+                        : bucket.totalExpenses / maxTotalExpense,
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children:
+                buckets // for ... in
+                    .map(
+                      (bucket) => Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(
+                            categoryIcons[bucket.category],
+                            color: isDarkMode
+                                ? Theme.of(context).colorScheme.secondary
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+          ),
+        ],
+      ),
     );
   }
 }

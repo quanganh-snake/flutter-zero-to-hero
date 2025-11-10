@@ -94,84 +94,99 @@ class _CreateExpenseState extends State<CreateExpense> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 48, 20, 20),
-      child: Column(
-        spacing: 20,
-        children: [
-          TextField(
-            controller: _titleController,
-            decoration: InputDecoration(label: Text('Title')),
-            maxLength: 50,
-            keyboardType: TextInputType.text,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _amountController,
-                  decoration: InputDecoration(
-                    labelText: 'Amount',
-                    prefixText: '\$ ',
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              SizedBox(width: 20), // Spacing between the fields
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      _selectedDate == null
-                          ? 'No date selected'
-                          : dateFormatter.format(_selectedDate!),
-                    ),
-                    IconButton(
-                      onPressed: handlePresentDatePicker,
-                      icon: Icon(Icons.calendar_month),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              DropdownButton(
-                items: Category.values.map((cat) {
-                  return DropdownMenuItem(
-                    value: cat,
-                    child: Text(cat.name.toUpperCase()),
-                  );
-                }).toList(),
-                value: _selectedCategory,
-                onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
+    final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
 
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
+    return LayoutBuilder(
+      builder: (context, boxConstraints) {
+        final width = boxConstraints.maxWidth;
+        final height = boxConstraints.maxHeight;
+
+        return SizedBox(
+          height: double.infinity,
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardSpace + 20),
+              child: Column(
+                spacing: 20,
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(label: Text('Title')),
+                    maxLength: 50,
+                    keyboardType: TextInputType.text,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          decoration: InputDecoration(
+                            labelText: 'Amount',
+                            prefixText: '\$ ',
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      SizedBox(width: 20), // Spacing between the fields
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              _selectedDate == null
+                                  ? 'No date selected'
+                                  : dateFormatter.format(_selectedDate!),
+                            ),
+                            IconButton(
+                              onPressed: handlePresentDatePicker,
+                              icon: Icon(Icons.calendar_month),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DropdownButton(
+                        items: Category.values.map((cat) {
+                          return DropdownMenuItem(
+                            value: cat,
+                            child: Text(cat.name.toUpperCase()),
+                          );
+                        }).toList(),
+                        value: _selectedCategory,
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+
+                          setState(() {
+                            _selectedCategory = value;
+                          });
+                        },
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: handleSubmitExpenseData,
+                        child: Text('Save Expense'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: handleSubmitExpenseData,
-                child: Text('Save Expense'),
-              ),
-            ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
